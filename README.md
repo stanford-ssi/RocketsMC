@@ -61,3 +61,22 @@ Now open a new terminal window to execute <br><br>
 `nodemon`
 <br><br>
 You should see RocketsMC come to life at [http://localhost:3000/](http://localhost:3000/)
+
+## Distributing over Ad-Hoc Wifi
+
+Rockets MC works without an internet connection since you probably won't have a great LTE signal out at the launch site. You'll want to configure the host computer to distribute RocketsMC over ad hoc wifi.
+
+<br>
+First, we need to set up our own network. If you're on a MAC, just click the wifi symbol on the status bar and select "Create Network". Standard options are fine. If you're running Ubuntu, check [this out](http://howtoubuntu.org/how-to-create-a-wireless-ad-hoc-network-in-ubuntu). If you're running Windows, I don't know how you made it this far because the project's directory depth is past the character limit for Windows 7/8 & 10. 
+
+<br>
+Now fire up the app with `mongod` and `nodemon` in the top level of the project directory. 
+<br>
+
+Now let's figure out what ip address clients can connect to. Do:
+<br>
+`ipconfig getifaddr en0`
+<br>
+take note of the address. Clients can connect to:
+`<host address>:3000`
+
