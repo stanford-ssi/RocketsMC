@@ -421,16 +421,18 @@ socketServer.on('connection', function(socket){
              if (err) {
                response.status(400).send(JSON.stringify("Invalid Serial Port: " + flight.portName));
                return;
+             } else{
+               setupHandlers(port);
+               portPerFlight[flight.launch_name] = port;
+               launchNamePerPortPath[port.path] = flight.launch_name;
+               flight.status = "active";
+               flight.save();
+               response.send();
              }
            });
-           setupHandlers(port);
-           portPerFlight[flight.launch_name] = port;
-           launchNamePerPortPath[port.path] = flight.launch_name;
-           flight.status = "active";
-           flight.save();
-           response.send();
          } else{
-           response.status(400).send(JSON.stringify("Invalid flight status"));   
+           console.log("here");
+           response.status(700).send(JSON.stringify("Invalid flight status"));
          }
        }
      });

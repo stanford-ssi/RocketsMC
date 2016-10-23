@@ -6,9 +6,9 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
     $scope.completeTag = "Complete Kythera Flights";
     $scope.infoTag = "Registered non-Kythera Flights";
     $scope.isCollapsed = false;
-    $scope.launchToDelete = null;
-    $scope.statusToDelete = null;
-    $scope.flightToControl = null;
+    $scope.main.launchToDelete = null;
+    $scope.main.statusToDelete = null;
+    $scope.main.flightToControl = null;
     $scope.downloadComplete = {};
 
     /* callbacks to process the FetchModel for the registered flights */
@@ -58,71 +58,64 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
       window.location = "#/launchFlow";
     };
 
-    $scope.cancelControlSelection = function(){
-      $scope.flightToControl = null;
+    $scope.main.cancelControlSelection = function(){
+      $scope.main.flightToControl = null;
     };
 
     $scope.canGoLive = function(status){
-      if(!$scope.main.selectingControlSession){
+      if(!$scope.main.selectingControlSession && status === "active"){
         return true;
       }
       return false;
     };
 
-    $scope.loadFlightControl = function(){
-      $scope.main.restrictedControlSession = true;
-      $scope.main.selectingControlSession = false;
-      $scope.activateFlight($scope.flightToControl);
-    };
-
-    $scope.controlFligt = function(flight){
-      $scope.flightToControl = flight;
-      if(flight.status === "idle"){
-        $('#selectModal').modal();
-      }else{
-        $('#overrideModal').modal();
-      }
+    $scope.main.loadFlightControl = function(){
+      $scope.activateFlight($scope.main.flightToControl);
     };
 
     //let the user register a flight
     $scope.activateFlight = function(flight) {
-      if(flight.status === "idle"){
-        // create the XMLHttpRequest object
-        var xhttp;
-        xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          //Don’t do anything if not final state
-         if (this.readyState !== 4){
-           return;
-         }
-         //Final State but status not OK, send the error code as 0
-         if (this.readyState === 4 && this.status === 400) {
-           $scope.errorMsg = "There was an error in updating the flight status and you may have to re-register this flight. " + JSON.parse(this.responseText);
-           $('#errorModal').modal();
-           return;
-         }
-         //Final State, error code of 2 signifies a successful sign up
-         if (this.readyState === 4 && this.status === 200) {
-           $scope.main.showActivateSuccess();
-           $scope.setUpLiveFlight(flight);
-           return;
-         }
-       };
-        xhttp.open("POST", '/flight/activate');
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send("launch_name="+flight.launch_name);
-      } else{
-        $scope.setUpLiveFlight(flight);
-      }
+      // create the XMLHttpRequest object
+      var xhttp;
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        //Don’t do anything if not final state
+       if (this.readyState !== 4){
+         return;
+       }
+       //Final State but status not OK, send the error code as 0
+       if (this.readyState === 4 && this.status === 400) {
+         $scope.main.activationError();
+         return;
+       }
+       //Final State, error code of 2 signifies a successful sign up
+       if (this.readyState === 4 && this.status === 200) {
+         $scope.main.restrictedControlSession = true;
+         $scope.main.selectingControlSession = false;
+         $scope.main.showActivateSuccess();
+         $scope.setUpLiveFlight(flight);
+         return;
+       }
+       if (this.readyState === 4 && this.status === 700) {
+         $scope.main.restrictedControlSession = true;
+         $scope.main.selectingControlSession = false;
+         $scope.setUpLiveFlight(flight);
+         return;
+       }
+     };
+      xhttp.open("POST", '/flight/activate');
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send("launch_name="+flight.launch_name);
+      $scope.main.activeFlights = $scope.main.FetchModel("/flight/listActive", $scope.main.doneFetchingActiveFlightsCallback);
     };
 
     //callback that refreshes and notifies the user after a flight is removed
-    $scope.doneRemovingFlightCallback = function(model, error, type){
+    $scope.main.doneRemovingFlightCallback = function(model, error, type){
       $scope.$apply(function () {
         if(error){
-          $scope.alertMessage = JSON.parse(model);
+          $scope.main.alertMessage = JSON.parse(model);
         } else{
-          $scope.alertMessage = "Flight deleted";
+          $scope.main.alertMessage = "Flight deleted";
         }
 
         $('#alertModal').modal();
@@ -138,7 +131,7 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
       });
     };
 
-    $scope.removeFlight = function(launch_name, type){
+    $scope.main.removeFlight = function(launch_name, type){
       if($scope.launchToDelete === null || $scope.statusToDelete === null){
         return;
       }
@@ -152,12 +145,12 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
        }
        //Final State but status not OK
        if (this.readyState === 4 && this.status === 400) {
-         $scope.doneRemovingFlightCallback(this.responseText, true, type);
+         $scope.main.doneRemovingFlightCallback(this.responseText, true, type);
          return;
        }
        //Final State
        if (this.readyState === 4 && this.status === 200) {
-         $scope.doneRemovingFlightCallback(this.responseText, false, type);
+         $scope.main.doneRemovingFlightCallback(this.responseText, false, type);
          return;
        }
      };
@@ -171,12 +164,6 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
     $scope.cancelRemoval = function(){
       $scope.launchToDelete = null;
       $scope.statusToDelete = null;
-    };
-
-    $scope.confirmRemoval = function(launch_name, type){
-      $scope.launchToDelete = launch_name;
-      $scope.statusToDelete = type;
-      $('#confirmModal').modal();
     };
 
     var formatPFA = function(flight){
@@ -218,8 +205,7 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
     };
 
     $scope.downloadPFAInfo = function(flight){
-      $scope.alertMessage = "Generating & downloading flight report";
-      $('#alertModal').modal();
+      $scope.main.alertGeneration()
       var formattedPFA = formatPFA(flight);
       // check to see if there is data as well
       if(flight.status === "complete"){
@@ -237,9 +223,7 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
 
     $scope.genEmail = function(flight){
       if (!this.recipient){
-        console.log("yup");
-        $scope.errorMsg = "No recipient specified";
-        $('#errorModal').modal();
+        $scope.main.emailErrorRecp();
         return;
       }
       //$scope.downloadPFAInfo(flight);
@@ -247,8 +231,7 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
       if(flight.status === "complete"){
         fileNames = fileNames + " & Downloads/launch_data_" + flight.launch_name + ".csv";
       }
-      $scope.alertMessage = "Opening mail client. Please drag in the flight report files as attachments ("+ fileNames + ")";
-      $('#alertModal').modal();
+      $scope.main.emailLaunchMessage(fileNames);
       var subject = flight.rocket_name + " - " + flight.launch_name + " Flight Report";
       var recip = this.recipient;
       var body = encodeURIComponent("Hi there,\n\nA Flight report for " + flight.launch_name + " was downloaded. It should be attached.");

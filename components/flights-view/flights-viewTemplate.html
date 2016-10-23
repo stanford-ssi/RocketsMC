@@ -10,59 +10,6 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<!-- Modal -->
-<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="alert alert-danger alert-dismissable">
-            Deleted flights cannot be recovered 😳
-            <button type="button" class="btn btn-outline btn-danger" data-dismiss="modal" ng-click="removeFlight(launchToDelete, statusToDelete)" aria-hidden="true">Delete Flight</button>
-            <button type="button" class="close" data-dismiss="modal" ng-click="cancelRemoval()" aria-hidden="true">&times;</button>
-        </div>
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- Modal -->
-<div class="modal fade" id="selectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="alert alert-info alert-dismissable">
-            You are about to assume control of {{flightToControl.launch_name}}. You will be unable to view or select a new flight until the flight is complete and data is saved.
-            <button type="button" class="btn btn-outline btn-danger" data-dismiss="modal" ng-click="loadFlightControl()" aria-hidden="true">Give me the controls</button>
-            <button type="button" class="close" data-dismiss="modal" ng-click="cancelControlSelection()" aria-hidden="true">&times;</button>
-        </div>
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- Modal -->
-<div class="modal fade" id="overrideModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="alert alert-info alert-dismissable">
-            🙅 You are about to assume control of {{flightToControl.launch_name}} but the flight controller is already present! Are you sure you want to share control with another session?
-            <button type="button" class="btn btn-outline btn-danger" data-dismiss="modal" ng-click="loadFlightControl()" aria-hidden="true">Yes, give me control</button>
-            <button type="button" class="close" data-dismiss="modal" ng-click="cancelControlSelection()" aria-hidden="true">&times;</button>
-        </div>
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- Modal -->
-<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="alert alert-danger alert-dismissable">
-            {{errorMsg}} 🤔
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        </div>
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- Modal -->
-<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="alert alert-warning alert-dismissable">
-            {{alertMessage}}
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        </div>
-    </div>
-    <!-- /.modal-dialog -->
-</div>
 <!-- /.modal -->
 <!-- /.row -->
 <div class="row">
@@ -131,11 +78,11 @@
             This flight is currently idle. Live view is only available when the flight controller is present. If the rocket has passed pre-flight checks, log on as the flight controller and click "Assume Control".
         </div>
         <button ng-click="setUpLiveFlight(flight)" ng-show="!main.selectingControlSession" ng-disabled="flight.status !== 'active'" class="btn btn-primary"> Launch Live View </button>
-        <button ng-click="controlFligt(flight)" ng-show="main.selectingControlSession" class="btn btn-primary"> Assume Control </button>
+        <button ng-click="main.controlFligt(flight)" ng-show="main.selectingControlSession" class="btn btn-primary"> Assume Control </button>
         <button ng-click="downloadPFAInfo(flight)" class="btn btn-primary"> Downalod Flight Report </button>
         <input type="text" ng-show="downloadComplete[flight._id]" class="form-control" ng-model="recipient" name="recipient" placeholder="Report Recipient">
         <button ng-show="downloadComplete[flight._id]" class="btn btn-default" ng-click="genEmail(flight)" type="button">Email Flight Report<i class="fa fa-mail-forward"></i></button>
-        <button ng-click="confirmRemoval(flight.launch_name, flight.status)" ng-show="main.permission" class="btn btn-danger pull-right"> Delete </button>
+        <button ng-click="mail.confirmRemoval(flight.launch_name, flight.status)" ng-show="main.permission" class="btn btn-danger pull-right"> Delete </button>
       </div>
     </div>
   </div>
@@ -206,7 +153,7 @@
           <button ng-click="downloadPFAInfo(flight)" class="btn btn-primary"> Download Flight Report and Saved Data</button>
           <input type="text" ng-show="downloadComplete[flight._id]" class="form-control" ng-model="recipient" name="recipient" placeholder="Report Recipient">
           <button ng-show="downloadComplete[flight._id]" class="btn btn-default" ng-click="genEmail(flight)" type="button">Email Flight Report<i class="fa fa-mail-forward"></i></button>
-          <button ng-click="confirmRemoval(flight.launch_name, flight.status)" ng-show="main.permission" class="btn btn-danger pull-right"> Delete </button>
+          <button ng-click="main.confirmRemoval(flight.launch_name, flight.status)" ng-show="main.permission" class="btn btn-danger pull-right"> Delete </button>
         </div>
       </div>
     </div>
@@ -277,7 +224,7 @@
             <button ng-click="downloadPFAInfo(flight)" class="btn btn-primary"> Downalod Flight Report </button>
             <input type="text" ng-show="downloadComplete[flight._id]" class="form-control" ng-model="recipient" name="recipient" placeholder="Report Recipient">
             <button ng-show="downloadComplete[flight._id]" class="btn btn-default" ng-click="genEmail(flight)" type="button">Email Flight Report<i class="fa fa-mail-forward"></i></button>
-            <button ng-click="confirmRemoval(flight.launch_name, flight.status)" ng-show="main.permission" class="btn btn-danger pull-right"> Delete </button>
+            <button ng-click="main.confirmRemoval(flight.launch_name, flight.status)" ng-show="main.permission" class="btn btn-danger pull-right"> Delete </button>
           </div>
         </div>
     </div>
