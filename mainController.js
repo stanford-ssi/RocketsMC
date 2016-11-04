@@ -67,7 +67,7 @@ app.controller('MainController', ['$scope', '$rootScope', '$location', '$resourc
         // create some prarams that will be shared by all controllers
         $scope.main.permission = false;
         $scope.main.project = "Kythera Ground Station";
-        $scope.main.message = "Please Login"
+        $scope.main.message = "Select a session"
         $scope.main.session = {};
 
         $scope.main.here = false;
@@ -118,7 +118,7 @@ app.controller('MainController', ['$scope', '$rootScope', '$location', '$resourc
           $scope.main.session = {};
           $scope.main.permission = false;
           $scope.main.here = false;
-          $scope.main.message = "Please Login"
+          $scope.main.message = "Select a session"
           $scope.main.registering = false; //True when logged in user is registering a new flight
           $scope.main.viewSideBar = false;
           $scope.main.restrictedControlSession = false; //prevent the control session from accessing the flight select page
