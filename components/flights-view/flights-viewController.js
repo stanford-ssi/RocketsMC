@@ -132,7 +132,7 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
     };
 
     $scope.main.removeFlight = function(launch_name, type){
-      if($scope.launchToDelete === null || $scope.statusToDelete === null){
+      if($scope.main.launchToDelete === null || $scope.main.statusToDelete === null){
         return;
       }
       // create the XMLHttpRequest object
@@ -162,8 +162,8 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
     };
 
     $scope.cancelRemoval = function(){
-      $scope.launchToDelete = null;
-      $scope.statusToDelete = null;
+      $scope.main.launchToDelete = null;
+      $scope.main.statusToDelete = null;
     };
 
     var formatPFA = function(flight){
