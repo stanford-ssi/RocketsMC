@@ -405,8 +405,8 @@ app.controller('MainController', ['$scope', '$rootScope', '$location', '$resourc
           $('#activationSuccessModal').modal();
         }
 
-        $scope.main.activationError = function(){
-          $scope.main.errorMsg = "There was an error in updating the flight status and you may have to re-register this flight. " + JSON.parse(this.responseText);
+        $scope.main.activationError = function(errorText){
+          $scope.main.errorMsg = "There was an error in updating the flight status and you may have to re-register this flight." + errorText;
           $('#errorModal').modal();
         };
 

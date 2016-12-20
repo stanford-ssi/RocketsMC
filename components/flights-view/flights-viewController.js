@@ -85,7 +85,7 @@ app.controller('FlightsViewController', ['$scope', '$rootScope', '$location', '$
        }
        //Final State but status not OK, send the error code as 0
        if (this.readyState === 4 && this.status === 400) {
-         $scope.main.activationError();
+         $scope.main.activationError(JSON.parse(this.responseText));
          return;
        }
        //Final State, error code of 2 signifies a successful sign up
