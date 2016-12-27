@@ -30,14 +30,16 @@ app.controller('LoginRegisterController', ['$scope', '$rootScope', '$location', 
        if(num === 3){
          $scope.main.message = "Return ";
          $scope.main.registering = true;
-         window.location = "#/new-flight";
+         window.location.href = "#/new-flight";
          $scope.main.viewSideBar = false;
+         //$location.path("#/new-flight");
        }
        if(num === 2){
          $scope.main.permission = true;
          $scope.main.message = "Logout of Admin Session ";
-         window.location = "#/flights-list";
+         window.location.href = "#/flights-list";
          $scope.main.viewSideBar = true;
+         //$location.path("#/flights-list");
        }
        if(num === 1){
          //$scope.main.permission = true;
@@ -45,17 +47,20 @@ app.controller('LoginRegisterController', ['$scope', '$rootScope', '$location', 
          // Turn on the warning if this is a controller session
          window.onbeforeunload = confirmOnPageExit;
          $scope.main.selectingControlSession = true;
-         window.location = "#/flights-list";
+         window.location.href = "#/flights-list";
          $scope.main.viewSideBar = true;
+         //$location.path("#/flights-list");
        }
        if(num === 0){
          $scope.main.message = "Logout of View-Only Session ";
          $scope.main.flightList = $scope.main.FetchModel("/flight/listAll", $scope.main.doneFetchingFlightsCallback);
-         window.location = "#/flights-list";
+         window.location.href = "#/flights-list";
          $scope.main.viewSideBar = true;
+         //$location.path("#/flights-list");
        }
 
        $scope.main.welcome = "Welcome to Hawthorne 😎";
        $scope.main.here = true;
+       $scope.$apply();
      };
   }]);

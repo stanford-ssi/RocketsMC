@@ -417,7 +417,7 @@ socketServer.on('connection', function(socket){
                // look for return and newline at the end of each data packet.
                // '\n' must be sent by the XBEE to generate a new event
                parser: serialport.parsers.readline(decodeURIComponent(flight.msgParseChar))
-           },function (err) {
+           },function (err) { 
              if (err) {
                response.status(400).send(JSON.stringify("Invalid Serial Port: " + flight.portName));
                return;
