@@ -63,6 +63,20 @@ If there's a rocket flying a downlink module and it's registered in rocketMC, so
 
 ![enter image description here](https://lh3.googleusercontent.com/-9pTR_AjLKYM/WIOeQcXjuCI/AAAAAAAAAfw/5RoxqMvTwCAuC6rW1yRvPCkOAifyPSuTQCLcB/s0/Screen+Shot+2017-01-21+at+6.42.33+PM.png "Screen Shot 2017-01-21 at 6.42.33 PM.png")
 
-You'll then be redirected to the "Live view" page if a connection was successfully made to the RX module. If the rocket is transmitting, the graphe 
- 
+You'll then be redirected to the "Live view" page if a connection was successfully made to the RX module. If the rocket is transmitting, the graphs should start filling up with data and you'll see the most recent transmission in the drop down list. When a "D" message comes in, the rocket's string message will appear in the drop down. If you have any active control system, you can punch in your messages here to TX back to the rocket. A link to all received transmissions is in the left panel. You can mark a flight complete, see the current flight status, and other cool things on the notification panels as well. Mark the flight complete after recovery so the server can make the data available for download (don't worry about refreshing or losing your connection though, the server is logging everything once the flight is activated -- you will just get a small error modal that warns multiple people may be trying to return to the flight controller page when you try to log back in). 
 
+***You should definitely try activating a flight on campus at least a few days before your launch so you can confirm that your encoding works properly and that the RX module is working well. This is super important. Please don't wait for the last minute. Plz. Tnx.***
+
+#### Managing flights
+
+Now we can explore how to maintain the stored flights via the "MC Admin" session. Do this whenever you want to delete an old flight once you've already downloaded all data. To do this, simply login as the MC Admin and find the flight you want to delete. 
+
+![You know what to do](https://lh3.googleusercontent.com/-CkU1y4Z-U6g/WITaFHv-tdI/AAAAAAAAAgU/TwQeuNpNjR8ZBFurFFkbgcjUXEUvmLITwCLcB/s0/Screen+Shot+2017-01-22+at+1.54.50+PM.png "deleting.png")
+
+Pretty self explanatory. Everything gets nuked. 
+
+####Alright How does this all sound?
+
+##Please actively poke at RocketsMC to help find bugs. Send me an asana link with the bug description and I shall squash. 
+
+Viel Danke
