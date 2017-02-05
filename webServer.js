@@ -10,21 +10,21 @@ var m = new Array(12); m[0]=  "January"; m[1] = "February"; m[2] = "March";
 m[3] = "April"; m[4] = "May"; m[5] = "June"; m[6] = "July"; m[7] = "August";
 m[8] = "September"; m[9] = "October"; m[10] = "November"; m[11] = "December";
 var time = function(forFile){
-  var d = new Date(); var day = w[d.getDay()]; var month = m[d.getMonth()];
-  var date = d.getDate().toString(); var year = d.getFullYear().toString();
-  var time; var minute = (d.getMinutes()<10)?"0"+d.getMinutes().toString():d.getMinutes().toString();
-  var hour = d.getHours();
-  if(hour < 13){
-    if (hour === 0){ time = "12" + ":" + minute + " AM";}
-    else{ time = (hour < 10)? "0" + hour.toString() + ":" + minute + " am" : hour.toString() + ":" + minute + " am";}
-  } else{ hour -= 12;
-    time = (hour < 10)? "0" + hour.toString() + ":" + minute + " pm" : hour.toString() + ":" + minute + " pm";
-  }
-  if(forFile !== true){
-    return day + ", " + month + " " + date + ", " + year + " " + "at "  + time;
-  }else {
-    return month + "_" + date + "_" + year + "_" + time;
-  }
+    var d = new Date(); var day = w[d.getDay()]; var month = m[d.getMonth()];
+    var date = d.getDate().toString(); var year = d.getFullYear().toString();
+    var time; var minute = (d.getMinutes()<10)?"0"+d.getMinutes().toString():d.getMinutes().toString();
+    var hour = d.getHours();
+    if(hour < 13){
+	if (hour === 0){ time = "12" + ":" + minute + " AM";}
+	else{ time = (hour < 10)? "0" + hour.toString() + ":" + minute + " am" : hour.toString() + ":" + minute + " am";}
+    } else{ hour -= 12;
+	    time = (hour < 10)? "0" + hour.toString() + ":" + minute + " pm" : hour.toString() + ":" + minute + " pm";
+	  }
+    if(forFile !== true){
+	return day + ", " + month + " " + date + ", " + year + " " + "at "  + time;
+    }else {
+	return month + "_" + date + "_" + year + "_" + time;
+    }
 };
 
 // OK BACK TO ACTUAL STUFF
@@ -81,7 +81,7 @@ var rawDataCSVs = {}; // an association of flight names to downlink CSV's
 var flightEventTXTs = {}; // an association of flight names to txt files that track flight events
 
 app.get('/', function (request, response) {
-     response.sendfile(__dirname + '/index.html');
+    response.sendfile(__dirname + '/index.html');
 });
 
 // Server Initialization...we should probably use the under the hood html object
@@ -97,7 +97,7 @@ var socket_ids = [];
 
 // Let's set up the serial port array now
 var serialport = require('serialport');// include the library
-var SerialPort = serialport.SerialPort; // make a local instance of it
+var SerialPort = serialport; // make a local instance of it
 // get port name from the command line with $ ls /dev/tty.*
 // previously used port names: '/dev/tty.usbserial-A1011FUN', '/dev/tty.usbserial-DN00OK9Z';
 // maintain a list of open ports TODO: we probably don't need this
@@ -123,129 +123,129 @@ var dataFileNames = {};
 //       listen.
 
 function setupTrackingFiles(launch_name, portName, chnParseChar, channels, units, states) {
-  channelParseCharPerFlight[launch_name]=chnParseChar;
-  rawDataCSVs[launch_name] = fs.createWriteStream('./files/rawDownlinks/'+launch_name+'.csv');
-  dataFileNames[launch_name] = './files/rawDownlinks/'+launch_name+'.csv';
-  channelsPerFlight[launch_name] = channels;
-  unitsPerFlight[launch_name] = units;
-  parseCharPerChannel[launch_name] = chnParseChar;
-  statesPerFlight[launch_name] = states;
+    channelParseCharPerFlight[launch_name]=chnParseChar;
+    rawDataCSVs[launch_name] = fs.createWriteStream('./files/rawDownlinks/'+launch_name+'.csv');
+    dataFileNames[launch_name] = './files/rawDownlinks/'+launch_name+'.csv';
+    channelsPerFlight[launch_name] = channels;
+    unitsPerFlight[launch_name] = units;
+    parseCharPerChannel[launch_name] = chnParseChar;
+    statesPerFlight[launch_name] = states;
 
-  var channel_list = channels.split(',');
-  var unit_list = units.split(',');
-  var num_elems = channel_list.length-1; //subtract 1 since we have a trailing comma
-  numChannelsPerFlight[launch_name] = num_elems;
-  rawDataCSVs[launch_name].write("Timestamp (MM:SS),");
-  for (var i = 0; i < num_elems; i++) {
-    rawDataCSVs[launch_name].write(channel_list[i]+" ("+unit_list[i]+"),");
-  }
-  rawDataCSVs[launch_name].write("\n");
-  flightEventTXTs[launch_name] = fs.createWriteStream('./files/flightEvents/'+launch_name+'.txt');
-  flightEventTXTs[launch_name].write("Starting new logging session\n" + time()  + "\n");
+    var channel_list = channels.split(',');
+    var unit_list = units.split(',');
+    var num_elems = channel_list.length-1; //subtract 1 since we have a trailing comma
+    numChannelsPerFlight[launch_name] = num_elems;
+    rawDataCSVs[launch_name].write("Timestamp (MM:SS),");
+    for (var i = 0; i < num_elems; i++) {
+	rawDataCSVs[launch_name].write(channel_list[i]+" ("+unit_list[i]+"),");
+    }
+    rawDataCSVs[launch_name].write("\n");
+    flightEventTXTs[launch_name] = fs.createWriteStream('./files/flightEvents/'+launch_name+'.txt');
+    flightEventTXTs[launch_name].write("Starting new logging session\n" + time()  + "\n");
 }
 
 function setupHandlers(port) {
-  // Add some listeners for when the port is opened, gets an error, and closed
-  port.on('open', function() {
-      console.log('Port ' + port.path + ' open. Data rate: ' + port.options.baudRate);
-      flightEventTXTs[launchNamePerPortPath[port.path]].write("\nPort " + port.path + " open. Listening for Kythera at data rate: " + port.options.baudRate + "\n");
-  });
-  port.on('error', function(error) {
-     console.log('Serial port error: ' + error);
-     flightEventTXTs[launchNamePerPortPath[port.path]].write('\nSerial port error: ' + error);
-  });
-  port.on('close', function() {
-     console.log(port.path + " closed.");
-     flightEventTXTs[launchNamePerPortPath[port.path]].write('\n\nSession complete for device: ' + port.path + '\n\n');
-  });
-  // Define behaviors for when we recieve data:
-  port.on('data', function(data) {
-    // build an object to send to clients
-    var toSend = {};
-    toSend.num_online = socket_ids.length;
-    toSend.data = data;
-    toSend.path = port.path;
-    toSend.launch_name = launchNamePerPortPath[port.path];
-    toSend.time = new Date();
-    toSend.channels = channelsPerFlight[toSend.launch_name];
-    toSend.units = unitsPerFlight[toSend.launch_name];
-    toSend.chnParseChar = parseCharPerChannel[toSend.launch_name];
-    toSend.num_channels = numChannelsPerFlight[toSend.launch_name];
-    io.to('subscribedClients').emit('from:kythera', JSON.stringify(toSend)); // send the data to all subscribed clients
+    // Add some listeners for when the port is opened, gets an error, and closed
+    port.on('open', function() {
+	console.log('Port ' + port.path + ' open. Data rate: ' + port.options.baudRate);
+	flightEventTXTs[launchNamePerPortPath[port.path]].write("\nPort " + port.path + " open. Listening for Kythera at data rate: " + port.options.baudRate + "\n");
+    });
+    port.on('error', function(error) {
+	console.log('Serial port error: ' + error);
+	flightEventTXTs[launchNamePerPortPath[port.path]].write('\nSerial port error: ' + error);
+    });
+    port.on('close', function() {
+	console.log(port.path + " closed.");
+	flightEventTXTs[launchNamePerPortPath[port.path]].write('\n\nSession complete for device: ' + port.path + '\n\n');
+    });
+    // Define behaviors for when we recieve data:
+    port.on('data', function(data) {
+	// build an object to send to clients
+	var toSend = {};
+	toSend.num_online = socket_ids.length;
+	toSend.data = data;
+	toSend.path = port.path;
+	toSend.launch_name = launchNamePerPortPath[port.path];
+	toSend.time = new Date();
+	toSend.channels = channelsPerFlight[toSend.launch_name];
+	toSend.units = unitsPerFlight[toSend.launch_name];
+	toSend.chnParseChar = parseCharPerChannel[toSend.launch_name];
+	toSend.num_channels = numChannelsPerFlight[toSend.launch_name];
+	io.to('subscribedClients').emit('from:kythera', JSON.stringify(toSend)); // send the data to all subscribed clients
 
-    // log on the server side for persistence
-    flightEventTXTs[launchNamePerPortPath[port.path]].write("\nRecieved message from flight: " + toSend.launch_name +" On port : " + port.path +  " at " + toSend.time + "\n");
-    if(data.charAt(3) === "K"){
-      rawDataCSVs[launchNamePerPortPath[port.path]].write(new Date().toTimeString().substring(3,9)+",");
-      if(channelParseCharPerFlight[launchNamePerPortPath[port.path]] !== ","){
-        rawDataCSVs[launchNamePerPortPath[port.path]].write(data.replace(channelParseCharPerFlight[launchNamePerPortPath[port.path]], ","));
-      }else{
-        rawDataCSVs[launchNamePerPortPath[port.path]].write(data);
-      }
-      rawDataCSVs[launchNamePerPortPath[port.path]].write("\n");
-      flightEventTXTs[launchNamePerPortPath[port.path]].write("<data message>");
-    }else if(data.charAt(3) === "D"){
-      flightEventTXTs[launchNamePerPortPath[port.path]].write(data);
-    }
-  });
+	// log on the server side for persistence
+	flightEventTXTs[launchNamePerPortPath[port.path]].write("\nRecieved message from flight: " + toSend.launch_name +" On port : " + port.path +  " at " + toSend.time + "\n");
+	if(data.charAt(3) === "K"){
+	    rawDataCSVs[launchNamePerPortPath[port.path]].write(new Date().toTimeString().substring(3,9)+",");
+	    if(channelParseCharPerFlight[launchNamePerPortPath[port.path]] !== ","){
+		rawDataCSVs[launchNamePerPortPath[port.path]].write(data.replace(channelParseCharPerFlight[launchNamePerPortPath[port.path]], ","));
+	    }else{
+		rawDataCSVs[launchNamePerPortPath[port.path]].write(data);
+	    }
+	    rawDataCSVs[launchNamePerPortPath[port.path]].write("\n");
+	    flightEventTXTs[launchNamePerPortPath[port.path]].write("<data message>");
+	}else if(data.charAt(3) === "D"){
+	    flightEventTXTs[launchNamePerPortPath[port.path]].write(data);
+	}
+    });
 }
 
 function addPort(flightName, portName, baudRate, msgParseChar){
-  console.log("Setting up port: " + portName + " at: " + baudRate);
-  log.write("\nSetting up port: " + portName + " at: " + baudRate);
-  var port = new SerialPort(portName, {
-      baudrate:baudRate,
-      // look for return and newline at the end of each data packet.
-      // '\n' must be sent by the XBEE to generate a new event
-      parser: serialport.parsers.readline(decodeURIComponent(msgParseChar))
-  },function (err) {
-    if (err) {
-      return console.log('Error: ', err.message);
-    }
-  });
+    console.log("Setting up port: " + portName + " at: " + baudRate);
+    log.write("\nSetting up port: " + portName + " at: " + baudRate);
+    var port = new SerialPort(portName, {
+	baudrate:baudRate,
+	// look for return and newline at the end of each data packet.
+	// '\n' must be sent by the XBEE to generate a new event
+	parser: serialport.parsers.readline(decodeURIComponent(msgParseChar))
+    },function (err) {
+	if (err) {
+	    console.log('Error: ', err.message);
+	}
+    });
 
-  setupHandlers(port);
-  portPerFlight[flightName] = port;
-  launchNamePerPortPath[port.path] = flightName;
+    setupHandlers(port);
+    portPerFlight[flightName] = port;
+    launchNamePerPortPath[port.path] = flightName;
 }
 
 socketServer.on('connection', function(socket){
-  console.log('User ' + socket.id + ' connected');
-  if(socket_ids.indexOf(socket.id) < 0){ // add the user to our list of users if they have never been here
-    socket_ids.push(socket.id);
-    log.write('\nUser ' + socket.id + ' connected\n');
-  }
+    console.log('User ' + socket.id + ' connected');
+    if(socket_ids.indexOf(socket.id) < 0){ // add the user to our list of users if they have never been here
+	socket_ids.push(socket.id);
+	log.write('\nUser ' + socket.id + ' connected\n');
+    }
 
-  socket.on('disconnect', function(){
-     socket.leave('subscribedClients'); //not sure if this will break it
-     console.log('User ' + socket.id + ' disconnected');
-     socket_ids.splice(socket_ids.indexOf(socket.id), 1);
-     log.write('\nUser ' + socket.id + ' disconnected\n');
-  });
-
-  // this function runs if there's input from the client
-	socket.on('from:controller', function(data) {
-    var portToWriteTo = portPerFlight[data.flightName];
-    portToWriteTo.write(data.message);  // send the data to the correct serial device
-    console.log("Sent message to device: " + portToWriteTo.path);
-    log.write("\nSent message to device: " + portToWriteTo.path + " at: " + time() + ":\n"+data.message + "\n");
-    flightEventTXTs[data.flightName].write("\nSent message to device: " + portToWriteTo.path + " at: " + time() + ":\n"+data.message + "\n");
-	});
-
-  // let the client request to recieve downlink data
-  socket.on('subscribeToDownlink', function() {
-    socket.join('subscribedClients');
-  });
-
-  // let the client request to recieve downlink data
-  socket.on('getCSV', function(requestedFlight) {
-    fs.readFile(dataFileNames[requestedFlight.launch_name], 'utf8', function(err, contents) {
-      var toSend = {};
-      toSend.file = contents;
-      toSend.launch_name = requestedFlight.launch_name;
-      socket.emit('dataFile', JSON.stringify(toSend));
+    socket.on('disconnect', function(){
+	socket.leave('subscribedClients'); //not sure if this will break it
+	console.log('User ' + socket.id + ' disconnected');
+	socket_ids.splice(socket_ids.indexOf(socket.id), 1);
+	log.write('\nUser ' + socket.id + ' disconnected\n');
     });
-  });
+
+    // this function runs if there's input from the client
+    socket.on('from:controller', function(data) {
+	var portToWriteTo = portPerFlight[data.flightName];
+	portToWriteTo.write(data.message);  // send the data to the correct serial device
+	console.log("Sent message to device: " + portToWriteTo.path);
+	log.write("\nSent message to device: " + portToWriteTo.path + " at: " + time() + ":\n"+data.message + "\n");
+	flightEventTXTs[data.flightName].write("\nSent message to device: " + portToWriteTo.path + " at: " + time() + ":\n"+data.message + "\n");
+    });
+
+    // let the client request to recieve downlink data
+    socket.on('subscribeToDownlink', function() {
+	socket.join('subscribedClients');
+    });
+
+    // let the client request to recieve downlink data
+    socket.on('getCSV', function(requestedFlight) {
+	fs.readFile(dataFileNames[requestedFlight.launch_name], 'utf8', function(err, contents) {
+	    var toSend = {};
+	    toSend.file = contents;
+	    toSend.launch_name = requestedFlight.launch_name;
+	    socket.emit('dataFile', JSON.stringify(toSend));
+	});
+    });
 });
 
 /*
@@ -295,7 +295,7 @@ socketServer.on('connection', function(socket){
             if (err) {
                 response.status(500).send(JSON.stringify(err));
             }
-            response.end(JSON.stringify(flightNames));
+            response.json(flightNames);
       });
     });
   });
@@ -317,9 +317,9 @@ socketServer.on('connection', function(socket){
           done_callback(err);
         }, function (err) {
             if (err) {
-                response.status(500).send(JSON.stringify(err));
+                response.status(500).json(err);
             }
-            response.end(JSON.stringify(flightNames));
+            response.json(flightNames);
       });
     });
   });
@@ -341,9 +341,9 @@ socketServer.on('connection', function(socket){
           done_callback(err);
         }, function (err) {
             if (err) {
-                response.status(500).send(JSON.stringify(err));
+                response.status(500).json(err);
             }
-            response.end(JSON.stringify(flightNames));
+            response.json(flightNames);
       });
     });
   });
@@ -373,7 +373,7 @@ socketServer.on('connection', function(socket){
     if(portToWriteTo !== undefined){ // this is a little ugly but jshint doesn't want us to define the close callback in the loop
       portToWriteTo.close(function (err) {
         if(err){
-          response.status(400).send(JSON.stringify("There was a problem closing the port: " + err));
+          response.status(400).json("There was a problem closing the port: " + err);
           return;
         }
         // the close was successful so remove the port from the array
@@ -382,7 +382,7 @@ socketServer.on('connection', function(socket){
         response.status(200).send("Port removed");
       });
     } else{
-      response.status(400).send(JSON.stringify("The requested port does not exist"));
+      response.status(400).json("The requested port does not exist");
     }
   });
 
@@ -405,7 +405,7 @@ socketServer.on('connection', function(socket){
      Flight.findOne({launch_name : request.body.launch_name}, function(err, flight) {
        if (err) {
            console.error('/flight/:id error:', err);
-           response.status(400).send(JSON.stringify(err));
+           response.status(400).json(err);
            return;
        }
        if(flight){
@@ -419,7 +419,7 @@ socketServer.on('connection', function(socket){
                parser: serialport.parsers.readline(decodeURIComponent(flight.msgParseChar))
            },function (err) { 
              if (err) {
-               response.status(400).send(JSON.stringify("Invalid Serial Port: " + flight.portName));
+               response.status(400).json("Invalid Serial Port: " + flight.portName);
                return;
              } else{
                setupHandlers(port);
@@ -432,7 +432,7 @@ socketServer.on('connection', function(socket){
            });
          } else{
            console.log("here");
-           response.status(700).send(JSON.stringify("Invalid flight status"));
+           response.status(700).json("Invalid flight status");
          }
        }
      });
@@ -448,7 +448,7 @@ socketServer.on('connection', function(socket){
      Flight.findOne({launch_name : request.body.launch_name}, function(err, flight) {
        if (err) {
            console.error('/flight/:id error:', err);
-           response.status(400).send(JSON.stringify(err));
+           response.status(400).json(err);
            return;
        }
        if(flight){
@@ -457,7 +457,7 @@ socketServer.on('connection', function(socket){
              var notification = "However, there was no serial port to close.";
              flight.status = "complete";
              flight.save();
-             response.status(200).send(JSON.stringify(notification));
+             response.status(200).json(notification);
            }else{
              portPerFlight[flight.launch_name].close(function (err) {
                var notification = "";
@@ -467,7 +467,7 @@ socketServer.on('connection', function(socket){
                  notification = "However, there was a problem closing the serial port.";
                }
                portPerFlight[request.body.flightName] = null;
-               response.status(200).send(JSON.stringify(notification));
+               response.status(200).json(notification);
              });
            }
          }
@@ -484,7 +484,7 @@ socketServer.on('connection', function(socket){
     Flight.remove({launch_name : request.body.launch_name}, function(err) {
       if (err) {
         console.error('Unable to delete the requested flight:', err);
-        response.status(400).send(JSON.stringify(err));
+        response.status(400).json(err);
       } else{
         console.log("deleted");
         // the flight was deleted so we don't need to associate the flight name and port
@@ -503,11 +503,11 @@ socketServer.on('connection', function(socket){
     Flight.findOne({launch_name : request.body.launch_name}, function(err, flight) {
       if (err) {
           console.error('/flight/:id error:', err);
-          response.status(400).send(JSON.stringify(err));
+          response.status(400).json(err);
           return;
       }
       if(flight){
-        response.status(400).send(JSON.stringify("This flight name already exists"));
+        response.status(400).json("This flight name already exists");
         return;
       }
 
@@ -543,7 +543,7 @@ socketServer.on('connection', function(socket){
           if(err){
             //report an error
             console.log("Unable to register new flight: " + request.body.launch_name);
-            response.status(400).send(JSON.stringify("Unable to register new flight: " + request.body.launch_name + ". Please try again."));
+            response.status(400).json("Unable to register new flight: " + request.body.launch_name + ". Please try again.");
             return;
           }
           //Log info about the flight we're adding

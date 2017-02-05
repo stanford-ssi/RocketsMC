@@ -399,11 +399,11 @@ app.controller('MainController', ['$scope', '$rootScope', '$location', '$resourc
 
         $scope.main.showSuccess = function(){
           $('#registrationSuccessModal').modal();
-        }
+        };
 
         $scope.main.showActivateSuccess = function(){
           $('#activationSuccessModal').modal();
-        }
+        };
 
         $scope.main.activationError = function(errorText){
           $scope.main.errorMsg = "There was an error in updating the flight status and you may have to re-register this flight." + errorText;
@@ -413,17 +413,17 @@ app.controller('MainController', ['$scope', '$rootScope', '$location', '$resourc
         $scope.main.alertGeneration = function(){
           $scope.main.alertMessage = "Generating & downloading flight report";
           $('#alertModal').modal();
-        }
+        };
 
         $scope.main.emailErrorRecp = function(){
           $scope.main.errorMsg = "No recipient specified";
           $('#errorModal').modal();
-        }
+        };
 
         $scope.main.emailLaunchMessage = function(fileNames){
           $scope.main.alertMessage = "Opening mail client. Please drag in the flight report files as attachments ("+ fileNames + ")";
           $('#alertModal').modal();
-        }
+        };
 
         $scope.main.confirmRemoval = function(launch_name, type){
           $scope.main.launchToDelete = launch_name;
