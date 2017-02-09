@@ -28,7 +28,8 @@
                             <div class="form-group input-group">
                                 <span class="input-group-addon"><i class="fa fa-calendar"></i>
                                 </span>
-                                <input type="date" class="form-control" ng-model="launch_date" name="launch_date">
+                                <input type="date" class="form-control" ng-model="launch_date" name="launch_date"
+				       placeholder="YYYY-MM-DD">
                             </div>
                             <label>Launch Objectives *</label>
                             <div class="form-group input-group">
@@ -183,15 +184,14 @@
 
                             <button type="submit"  class="btn btn-primary btn-lg btn-block">Register Flight</button>
                             <!-- Modal -->
-                            <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <!--div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="alert alert-danger alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                        {{errorMsg}}
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</!button>
+                                        <span>{{errorMsg}}</span>
                                     </div>
                                 </div>
-                                <!-- /.modal-dialog -->
-                            </div>
+                            </div-->
                             <!-- /.modal -->
                         </form>
                     </div>
