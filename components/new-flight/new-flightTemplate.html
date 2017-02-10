@@ -1,0 +1,208 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Flight Config</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+              <h2 class="panel-title">
+                  Fill out the form below with info from your pre flight approval form. Rockets MC will set up your data logs. (required *)
+              </h2>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2>PFA Info</h2>
+                        <form ng-submit="registerFlight()">
+                            <label>Unique Launch Name *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-quote-left"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="launch_name" name="launch_name" placeholder="Talos Flight 1">
+                            </div>
+                            <label>Launch Date *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i>
+                                </span>
+                                <input type="date" class="form-control" ng-model="launch_date" name="launch_date"
+				       placeholder="YYYY-MM-DD">
+                            </div>
+                            <label>Launch Objectives *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-list"></i>
+                                </span>
+                                <textarea type="text" class="form-control" rows="3" ng-model="launch_objectives" name="launch_objectives" placeholder="Verify new..."></textarea>
+                            </div>
+                            <label>Rocket Name *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-rocket"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="rocket_name" name="rocket_name" placeholder="Talos">
+                            </div>
+                            <label>Responsible Launcher *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="launcher" name="launcher" placeholder="Person Name">
+                            </div>
+                            <label>Launch Location *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-map-marker"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="launch_location" name="launch_location" placeholder="Middle of nowhere">
+                            </div>
+                            <label>Rocket Descrition *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-info-circle"></i>
+                                </span>
+                                <textarea type="text" class="form-control" rows="3" ng-model="rocket_description" name="rocket_description" placeholder="Novel recovery deployment with..."></textarea>
+                            </div>
+                            <label>Launch Organization *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-institution"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="organization" name="organization" placeholder="TCC or NAR">
+                            </div>
+                            <label>Dimensions *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-screenshot"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="dimensions" name="dimensions" placeholder="">
+                            </div>
+                            <label>Materials *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-wrench"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="materials" name="materials" placeholder="">
+                            </div>
+                            <label>Motor *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-fire"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="motor" name="motor" placeholder="J400">
+                            </div>
+                            <label>Avionics *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-rss"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="avionics" name="avionics" placeholder="Kythera, Raven, Stratologger, Custom, etc.">
+                            </div>
+                            <label>Payload Description *</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-gift"></i>
+                                </span>
+                                <input type="text" class="form-control" ng-model="payload_description" name="payload_description" placeholder="uh">
+                            </div>
+                            <label>Notes</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-edit"></i>
+                                </span>
+                                <textarea type="text" class="form-control" rows="3" ng-model="notes" name="notes" placeholder="Not built in the last 24 hours..."></textarea>
+                            </div>
+
+                            <h2>Kythera RX Config</h2>
+
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="checkboxModel.value1"> This flight uses Kythera
+                                    </label>
+                                </div>
+                            </div>
+                            <label>TTY port name</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-terminal"></i>
+                                </span>
+                                <input type="text" ng-disabled="!checkboxModel.value1" class="form-control" ng-model="portName" name="portName" placeholder="/dev/tty.usbserial-A1011FUN">
+                            </div>
+                            <label>Baud Rate</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-tachometer"></i>
+                                </span>
+                                <input type="text" ng-disabled="!checkboxModel.value1" class="form-control" ng-model="baudRate" name="baudRate" placeholder="19200">
+                            </div>
+                            <label>Message Parse Character (you probably don't need to change this)</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-scissors"></i>
+                                </span>
+                                <input type="text" ng-disabled="!checkboxModel.value1" class="form-control" ng-model="msgParseChar" name="msgParseChar" placeholder="leave blank for default: \n">
+                            </div>
+                            <label>Channel Parse Character (you probably don't need to change this)</label>
+                            <div class="form-group input-group">
+                                <span class="input-group-addon"><i class="fa fa-scissors"></i>
+                                </span>
+                                <input type="text" ng-disabled="!checkboxModel.value1" class="form-control" ng-model="chnParseChar" name="chnParseChar" placeholder="leave blank for default: ,">
+                            </div>
+                            <label>Parse Scheme (Make sure the scheme is input in ORDER)</label>
+                            <fieldset  data-ng-repeat="parseSegment in parseSegments">
+                              <div class="panel panel-default">
+                                <div class="panel-body">
+                                  <label>Channel Name</label>
+                                  <div class="form-group input-group">
+                                      <span class="input-group-addon"><i class="fa fa-superscript"></i>
+                                      </span>
+                                      <input type="text" ng-disabled="!checkboxModel.value1" class="form-control" ng-model="parseSegment.name" name="" placeholder="Temperature">
+                                  </div>
+                                  <label>Units</label>
+                                  <div class="form-group input-group">
+                                      <span class="input-group-addon"><i class="fa fa-sort-alpha-asc"></i>
+                                      </span>
+                                      <input type="text" ng-disabled="!checkboxModel.value1" class="form-control" ng-model="parseSegment.units" name="" placeholder="F">
+                                  </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <span class="btn btn-danger" ng-click="removeChoice(parseSegment.id, true)">Remove Channel</span>
+                                </div>
+                              </div>
+                            </fieldset>
+                            <br/>
+                            <span class="btn btn-default" ng-disabled="!checkboxModel.value1" style="margin-bottom:.6em"ng-click="addNewChoice(true)">Add new channel</span>
+                            <br/>
+                            <div class="form-group input-group"></div>
+                            <label>Flight States (Make sure the states are input in ORDER)</label>
+                            <fieldset  data-ng-repeat="state in flightStates">
+                              <div class="panel panel-default">
+                                <div class="panel-body">
+                                  <label>State Description</label>
+                                  <div class="form-group input-group">
+                                      <span class="input-group-addon"><i class="fa fa-superscript"></i>
+                                      </span>
+                                      <input type="text" ng-disabled="!checkboxModel.value1" class="form-control" ng-model="state.info" name="" placeholder="pre-flight">
+                                  </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <span class="btn btn-danger" ng-click="removeState(state.id, false)">Remove State</span>
+                                </div>
+                              </div>
+                            </fieldset>
+                            <br/>
+                            <span class="btn btn-default" ng-disabled="!checkboxModel.value1" style="margin-bottom:.6em"ng-click="addNewChoice(false)">Add new state</span>
+
+                            <button type="submit"  class="btn btn-primary btn-lg btn-block">Register Flight</button>
+                            <!-- Modal -->
+                            <!--div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="alert alert-danger alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</!button>
+                                        <span>{{errorMsg}}</span>
+                                    </div>
+                                </div>
+                            </div-->
+                            <!-- /.modal -->
+                        </form>
+                    </div>
+                    <!-- /.col-lg-6 (nested) -->
+                </div>
+                <!-- /.row (nested) -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

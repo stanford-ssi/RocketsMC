@@ -1,0 +1,254 @@
+<!-- Modal -->
+<div class="modal fade" id="confirmUploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="alert alert-info alert-dismissable">
+            Are you sure you want to mark this flight complete and close the downlink? You won't be able to log any more data for this flight. If you're flying again, just re-register!
+            <button type="button" class="btn btn-outline btn-danger" data-dismiss="modal" ng-click="markFlightComplete(main.selected_launch_name)" aria-hidden="true">Mark Flight Complete &amp; Save</button>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- Modal -->
+<div class="modal fade" id="statesList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="alert alert-info alert-dismissable">
+            <ul ng-repeat="state in main.selected_flight_states">
+              <li>{{state}}</li>
+            </ul>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- Modal -->
+<div class="modal fade" id="anomolyList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="alert alert-warning alert-dismissable">
+          <ul ng-repeat="anomoly in main.reportingAnomolies[$scope.main.selected_launch_name]">
+            <li>{{anomoly}}</li>
+          </ul>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="jumbotron" style="background-image:url(../../images/kerbalbanner.png);" >
+          <div class="panel-body" style="color:white;">
+            <h1>{{main.selected_launch_name}}</h1>
+          </div>
+          <ul class="nav navbar-top-links navbar-right">
+            <li>
+              <span ng-show="main.telemError" class="alert alert-danger">
+                <i class="fa fa-bug fa-fw"></i> Check-Sum Error</span>
+            </li>
+            <li>
+              <span ng-show="main.healthy" class="alert alert-success">
+                 <i class="fa fa-bullseye fa-fw"></i> Signal Aquired</span>
+            </li>
+            <li>
+              <span ng-show="!main.healthy" class="alert alert-danger">
+                <i class="fa fa-bug fa-fw"></i> Loss of Signal</span>
+            </li>
+          </ul>
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-tasks fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{main.currentStage}}</div>
+                        <div>Current Flight State</div>
+                    </div>
+                </div>
+            </div>
+            <a href="javascript:void(0);" ng-click="confirmUpload()" type="button" ng-show="main.restrictedControlSession">
+                <div class="panel-footer">
+                    <span class="pull-left">Mark Flight Complete</span>
+                    <span class="pull-right"><i class="fa fa-check"></i><i class="fa fa-upload"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+            <a href="javascript:void(0);" ng-click="showAllStates()" ng-show="!main.restrictedControlSession" type="button">
+                <div class="panel-footer">
+                    <span class="pull-left">View All States</span>
+                    <span class="pull-right"><i class="fa fa-paper-plane"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-history fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge" id="sinceTime"></div>
+                        <div>since last state change</div>
+                    </div>
+                </div>
+            </div>
+            <a href="javascript:void(0);" ng-click="showAllStates()" ng-show="main.restrictedControlSession" type="button">
+                <div class="panel-footer">
+                    <span class="pull-left">View All States</span>
+                    <span class="pull-right"><i class="fa fa-paper-plane"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-rebel fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{main.num_online}}</div>
+                        <div>{{main.rocketeers}} Online</div>
+                    </div>
+                </div>
+            </div>
+            <a href="javascript:void(0);" ng-click="updateOnline();">
+                <div class="panel-footer">
+                    <span class="pull-left">Refresh</span>
+                    <span class="pull-right"><i class="fa fa-refresh"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-red">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-warning fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{main.anomolyCount}}</div>
+                        <div>Anomolies reporting</div>
+                    </div>
+                </div>
+            </div>
+            <a href="javascript:void(0);" ng-click="reviewAnomolies();">
+                <div class="panel-footer">
+                    <span class="pull-left">Review Anomolies and Warnings</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Telemetry
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="flot-chart">
+                    <!--div class="flot-chart-content" id="flot-line-chart"></div-->
+                    <!--div chart='main.accelY'> </div-->
+                    <!--flot dataset="main.accelY" options="main.myChartOptions"></flot-->
+                    <div ng-repeat="x in main.graphIterators" ng-show="main.graphSelection === x" >
+                      <canvas id="line" class="chart chart-line" chart-data="main.graph[x]"
+                        chart-labels="main.graph.timeStamps" chart-legend="true" chart-series="main.Series[main.selected_launch_name][x]">
+                      </canvas>
+
+                    </div>
+                </div>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+    </div>
+  <div class="col-lg-4">
+      <div class="panel panel-default">
+          <div class="panel-heading">
+              <i class="fa fa-dashboard fa-fw"></i> Latest Telemetry
+          </div>
+          <!-- /.panel-heading -->
+          <div class="panel-body">
+              <div class="list-group">
+                  <a ng-repeat="x in main.graphIterators" href="javascript:void(0);" ng-click="updateView(x);" class="list-group-item">
+                      <i class="fa fa-rocket fa-fw"></i> {{main.channel_list[main.selected_launch_name][x]}}
+                      <span class="pull-right text-muted small"><em>{{main.x}}</em>
+                      </span>
+                  </a>
+              </div>
+              <!-- /.list-group -->
+              <!--a href="#" class="btn btn-default btn-block">View All Alerts</a-->
+          </div>
+          <!-- /.panel-body -->
+      </div>
+    </div>
+    <!-- /.col-lg-4 -->
+</div>
+
+<div class="row">
+    <!-- /.panel -->
+    <div class="col-lg-12" >
+      <div class="chat-panel panel panel-default">
+        <div class="panel-heading">
+            <i class="fa fa-comments fa-fw"></i>
+            Chat with Kythera
+        </div>
+        <!-- /.panel-heading -->
+        <div class="panel-body" scroll-glue>
+            <ul class="chat" ng-repeat="directive in main.messages">
+                <li class="left clearfix">
+                    <span class="chat-img pull-left">
+                        <img src={{directive.source}} alt="User Avatar" class="img-circle" />
+                    </span>
+                    <div class="chat-body clearfix">
+                        <div class="header">
+                            <strong class="primary-font">{{directive.name}}</strong>
+                            <p class="time"> sent on {{main.formatTime(directive.time)}} </p>
+                        </div>
+                        <p>
+                            {{directive.message}}
+                        </p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- /.panel-body -->
+        <div class="panel-footer" ng-show={{main.restrictedControlSession}}>
+            <form ng-submit=sendMessage() class="input-group" id="chatting">
+                <input autocomplete="off" type="text" id="btn-input" class="form-control input-sm" ng-model="text" name="text" placeholder="Type your message here..."/>
+                <span class="input-group-btn">
+                    <input class="btn btn-warning btn-sm" id="btn-chat" type="submit" value="Send" />
+                </span>
+            </div>
+        </div>
+      </div>
+      <!-- /.panel-footer -->
+
+      <!-- Flot Charts JavaScript -->
+      <script src="../bower_components/flot/excanvas.min.js"></script>
+      <script src="../bower_components/flot/jquery.flot.js"></script>
+      <script src="../bower_components/flot/jquery.flot.pie.js"></script>
+      <script src="../bower_components/flot/jquery.flot.resize.js"></script>
+      <script src="../bower_components/flot/jquery.flot.time.js"></script>
+      <script src="../bower_components/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
+      <script src="../js/flot-data.js"></script>
+</div>
+<!-- /.panel .chat-panel -->

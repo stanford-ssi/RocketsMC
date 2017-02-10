@@ -19,6 +19,10 @@ and:
 <br><br>
 which should run and print out the version numbers of your node and npm programs.
 <br><br>
+Oh also you need mongoose
+<br><br>
+`npm install mongoose`
+<br><br>
 
 ### Installing MongoDB
 Install the current stable release of MongoDB from the website [https://www.mongodb.org/downloads#production](https://www.mongodb.org/downloads#production). Unless you direct it otherwise, MongoDB will store the database in the directory /data/db (C:\data\db on Windows). Make sure this directory exists and is writable by you before starting the database.
