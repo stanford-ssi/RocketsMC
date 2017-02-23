@@ -171,7 +171,7 @@
                     <!--flot dataset="main.accelY" options="main.myChartOptions"></flot-->
                     <div ng-repeat="x in main.graphIterators" ng-show="main.graphSelection === x" >
                       <canvas id="line" class="chart chart-line" chart-data="main.graph[x]"
-                        chart-labels="main.graph.timeStamps" chart-legend="true" chart-series="main.Series[main.selected_launch_name][x]">
+                        chart-labels="main.graph.timeStamps" chart-legend="true" chart-series="main.Series[main.selected_launch_name][x]" chart-options="{animation: false}">
                       </canvas>
 
                     </div>

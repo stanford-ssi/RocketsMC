@@ -415,9 +415,7 @@ app.post('/flight/activate', function (request, response) {
             return;
 	}
 	if (flight) {
-	    
-	    console.log(flight.status);
-            if (flight.status == "idle") { //if the user is configuring a serial port
+            if (/*flight.status == "idle"*/true) { //if the user is configuring a serial port
 		// make the requisite tracking files
 		setupTrackingFiles(flight.launch_name, flight.portName, flight.chnParseChar, flight.channels, flight.units, flight.states);
 		console.log("Listening on " + flight.portName);
