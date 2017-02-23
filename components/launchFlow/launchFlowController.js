@@ -3,7 +3,7 @@
 app.controller('launchFlowController', ['$scope', '$rootScope', '$location', '$resource', '$http',
   function ($scope, $rootScope, $location, $resource, $http) {/* callback to process the FetchModel for the current visiting user */
 
-      $scope.onlineCallback = function(model){
+      $scope.onlineCallback = function(model) {
          $scope.$apply(function () {
            $scope.main.num_online = model;
            console.log(JSON.parse(model));
@@ -15,7 +15,7 @@ app.controller('launchFlowController', ['$scope', '$rootScope', '$location', '$r
          });
       };
 
-      $scope.sendMessage = function(){
+      $scope.sendMessage = function() {
         $scope.main.send(this.text);
 
         // add the message to our model locally
@@ -36,7 +36,7 @@ app.controller('launchFlowController', ['$scope', '$rootScope', '$location', '$r
       };
 
       function checkTime(i) {
-          if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+          if (i < 10) {i = "0" + i;};  // add zero in front of numbers < 10
           return i;
       }
 
@@ -56,7 +56,7 @@ app.controller('launchFlowController', ['$scope', '$rootScope', '$location', '$r
 
       $scope.setTimer();
 
-      $scope.updateView = function(val){
+      $scope.updateView = function(val) {
         $scope.main.graphSelection = val;
       };
 
@@ -69,11 +69,11 @@ app.controller('launchFlowController', ['$scope', '$rootScope', '$location', '$r
         console.log(points, evt);
       };*/
 
-      $scope.confirmUpload = function(){
+      $scope.confirmUpload = function() {
         $('#confirmUploadModal').modal();
-      }
+      };
 
-      $scope.markFlightComplete = function(flight_name){
+      $scope.markFlightComplete = function(flight_name) {
         // create the XMLHttpRequest object
         var xhttp;
         xhttp = new XMLHttpRequest();

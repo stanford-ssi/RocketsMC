@@ -87,12 +87,13 @@ app.get('/', function (request, response) {
 // Server Initialization...we should probably use the under the hood html object
 // which express wraps over  but since the raw object is returned by app.listen,
 // we can probably get away  with calling io.on() before io can totally be created.
-var io = require('socket.io');
+
 var server = app.listen(3000, '0.0.0.0', function () {
     var port = server.address().port;
     log.write('Server is online ... \nListening at http://localhost:' + port + ' exporting the directory ' + __dirname + ' ...\n');
 });
-var socketServer = io(server);
+var io = require('socket.io')(server);
+//var socketServer = io(server);
 var socket_ids = [];
 
 // Let's set up the serial port array now
@@ -145,6 +146,7 @@ function setupTrackingFiles(launch_name, portName, chnParseChar, channels, units
 }
 
 function setupHandlers(port) {
+    
     // Add some listeners for when the port is opened, gets an error, and closed
     port.on('open', function() {
 	console.log('Port ' + port.path + ' open. Data rate: ' + port.options.baudRate);
@@ -160,6 +162,7 @@ function setupHandlers(port) {
     });
     // Define behaviors for when we recieve data:
     port.on('data', function(data) {
+	//console.log("Data: " + data);
 	// build an object to send to clients
 	var toSend = {};
 	toSend.num_online = socket_ids.length;
@@ -171,20 +174,23 @@ function setupHandlers(port) {
 	toSend.units = unitsPerFlight[toSend.launch_name];
 	toSend.chnParseChar = parseCharPerChannel[toSend.launch_name];
 	toSend.num_channels = numChannelsPerFlight[toSend.launch_name];
-	io.to('subscribedClients').emit('from:kythera', JSON.stringify(toSend)); // send the data to all subscribed clients
+
+	console.log(JSON.stringify(toSend));
+	// send the data to all subscribed clients
+	io.to('subscribedClients').emit('from:kythera', JSON.stringify(toSend));
 
 	// log on the server side for persistence
 	flightEventTXTs[launchNamePerPortPath[port.path]].write("\nRecieved message from flight: " + toSend.launch_name +" On port : " + port.path +  " at " + toSend.time + "\n");
-	if(data.charAt(3) === "K"){
+	if (data.charAt(3) === "K") {
 	    rawDataCSVs[launchNamePerPortPath[port.path]].write(new Date().toTimeString().substring(3,9)+",");
-	    if(channelParseCharPerFlight[launchNamePerPortPath[port.path]] !== ","){
+	    if (channelParseCharPerFlight[launchNamePerPortPath[port.path]] !== ","){
 		rawDataCSVs[launchNamePerPortPath[port.path]].write(data.replace(channelParseCharPerFlight[launchNamePerPortPath[port.path]], ","));
-	    }else{
+	    } else {
 		rawDataCSVs[launchNamePerPortPath[port.path]].write(data);
 	    }
 	    rawDataCSVs[launchNamePerPortPath[port.path]].write("\n");
 	    flightEventTXTs[launchNamePerPortPath[port.path]].write("<data message>");
-	}else if(data.charAt(3) === "D"){
+	} else if (data.charAt(3) === "D") {
 	    flightEventTXTs[launchNamePerPortPath[port.path]].write(data);
 	}
     });
@@ -194,7 +200,7 @@ function addPort(flightName, portName, baudRate, msgParseChar){
     console.log("Setting up port: " + portName + " at: " + baudRate);
     log.write("\nSetting up port: " + portName + " at: " + baudRate);
     var port = new SerialPort(portName, {
-	baudrate:baudRate,
+	baudrate: parseInt(baudRate),
 	// look for return and newline at the end of each data packet.
 	// '\n' must be sent by the XBEE to generate a new event
 	parser: serialport.parsers.readline(decodeURIComponent(msgParseChar))
@@ -209,7 +215,7 @@ function addPort(flightName, portName, baudRate, msgParseChar){
     launchNamePerPortPath[port.path] = flightName;
 }
 
-socketServer.on('connection', function(socket){
+io.on('connection', function(socket){
     console.log('User ' + socket.id + ' connected');
     if(socket_ids.indexOf(socket.id) < 0){ // add the user to our list of users if they have never been here
 	socket_ids.push(socket.id);
@@ -233,9 +239,9 @@ socketServer.on('connection', function(socket){
     });
 
     // let the client request to recieve downlink data
-    socket.on('subscribeToDownlink', function() {
-	socket.join('subscribedClients');
-    });
+    //socket.on('subscribeToDownlink', function() {
+    socket.join('subscribedClients');
+    //});
 
     // let the client request to recieve downlink data
     socket.on('getCSV', function(requestedFlight) {
@@ -400,121 +406,134 @@ socketServer.on('connection', function(socket){
    *  saving data for this flight on the server. We'll send a bad response if the RX
    *  is not configured or can't be connected to.
    */
-   app.post('/flight/activate', function (request, response) {
-     //find and return the relevant flight
-     Flight.findOne({launch_name : request.body.launch_name}, function(err, flight) {
-       if (err) {
-           console.error('/flight/:id error:', err);
-           response.status(400).json(err);
-           return;
-       }
-       if(flight){
-         if(flight.status == "idle"){ //if the user is configuring a serial port
-           // make the requisite tracking files
-           setupTrackingFiles(flight.launch_name, flight.portName, flight.baudRate, flight.chnParseChar, flight.channels, flight.units, flight.states);
-           var port = new SerialPort(flight.portName, {
-               baudrate:flight.baudRate,
-               // look for return and newline at the end of each data packet.
-               // '\n' must be sent by the XBEE to generate a new event
-               parser: serialport.parsers.readline(decodeURIComponent(flight.msgParseChar))
-           },function (err) { 
-             if (err) {
-               response.status(400).json("Invalid Serial Port: " + flight.portName);
-               return;
-             } else{
-               setupHandlers(port);
-               portPerFlight[flight.launch_name] = port;
-               launchNamePerPortPath[port.path] = flight.launch_name;
-               flight.status = "active";
-               flight.save();
-               response.send();
-             }
-           });
-         } else{
-           console.log("here");
-           response.status(700).json("Invalid flight status");
-         }
-       }
-     });
-   });
+app.post('/flight/activate', function (request, response) {
+    //find and return the relevant flight
+    Flight.findOne({launch_name : request.body.launch_name}, function(err, flight) {
+	if (err) {
+            console.error('/flight/:id error:', err);
+            response.status(400).json(err);
+            return;
+	}
+	if (flight) {
+	    
+	    console.log(flight.status);
+            if (flight.status == "idle") { //if the user is configuring a serial port
+		// make the requisite tracking files
+		setupTrackingFiles(flight.launch_name, flight.portName, flight.chnParseChar, flight.channels, flight.units, flight.states);
+		console.log("Listening on " + flight.portName);
+		var port = new SerialPort(flight.portName, {
+		    baudrate: parseInt(flight.baudRate),
+		    // look for return and newline at the end of each data packet.
+		    // '\n' must be sent by the XBEE to generate a new event
+		    parser: serialport.parsers.readline(decodeURIComponent(flight.msgParseChar))
+		},function (err) {
+		    if (err) {
+			response.status(400).json("Invalid Serial Port: " + flight.portName);
+			return;
+		    } else {
+			setupHandlers(port);
+			portPerFlight[flight.launch_name] = port;
+			launchNamePerPortPath[port.path] = flight.launch_name;
+			flight.status = "active";
+			flight.save();
+			response.send();
+		    }
+		});
+            } else {
+		console.log("here");
+		response.status(700).json("Invalid flight status");
+            }
+	}
+    });
+});
 
   /*
    *  Use POST to let a client mark a flight as complete. This means we will stop
    *  saving data for this flight on the server. We'll send a bad response if the RX
    *  is not configured or can't be connected to.
    */
-   app.post('/flight/complete', function (request, response) {
-     //find and return the relevant flight
-     Flight.findOne({launch_name : request.body.launch_name}, function(err, flight) {
-       if (err) {
-           console.error('/flight/:id error:', err);
-           response.status(400).json(err);
-           return;
-       }
-       if(flight){
-         if(flight.status == "active"){ //if the flight has an active downlink
-           if(portPerFlight[flight.launch_name] === undefined){
-             var notification = "However, there was no serial port to close.";
-             flight.status = "complete";
-             flight.save();
-             response.status(200).json(notification);
-           }else{
-             portPerFlight[flight.launch_name].close(function (err) {
-               var notification = "";
-               flight.status = "complete";
-               flight.save();
-               if(err){
-                 notification = "However, there was a problem closing the serial port.";
-               }
-               portPerFlight[request.body.flightName] = null;
-               response.status(200).json(notification);
-             });
-           }
-         }
-       }
-     });
-   });
+app.post('/flight/complete', function (request, response) {
+    //find and return the relevant flight
+    Flight.findOne({launch_name : request.body.launch_name}, function(err, flight) {
+	if (err) {
+            console.error('/flight/:id error:', err);
+            response.status(400).json(err);
+            return;
+	}
+	if(flight){
+            if(flight.status == "active"){ //if the flight has an active downlink
+		if(portPerFlight[flight.launch_name] === undefined){
+		    var notification = "However, there was no serial port to close.";
+		    flight.status = "complete";
+		    flight.save();
+		    response.status(200).json(notification);
+		}else{
+		    portPerFlight[flight.launch_name].close(function (err) {
+			var notification = "";
+			flight.status = "complete";
+			flight.save();
+			if(err){
+			    notification = "However, there was a problem closing the serial port.";
+			}
+			portPerFlight[request.body.flightName] = null;
+			response.status(200).json(notification);
+		    });
+		}
+            }
+	}
+    });
+});
 
-  /*
+/*
    * Use POST to let client delete a flight
    */
-  app.post('/flight/delete', function(request, response){
+app.post('/flight/delete', function(request, response){
     console.log(request.body.launch_name);
     //get the user who has called the function
     Flight.remove({launch_name : request.body.launch_name}, function(err) {
-      if (err) {
-        console.error('Unable to delete the requested flight:', err);
-        response.status(400).json(err);
-      } else{
-        console.log("deleted");
-        // the flight was deleted so we don't need to associate the flight name and port
-        launchNamePerPortPath[request.body.launch_name] = null;
-        response.send();
-      }
+	if (err) {
+            console.error('Unable to delete the requested flight:', err);
+            response.status(400).json(err);
+	} else{
+            console.log("deleted");
+            // the flight was deleted so we don't need to associate the flight name and port
+            launchNamePerPortPath[request.body.launch_name] = null;
+            response.send();
+	}
     });
-  });
+});
 
   /*
    * Use a POST request with the flight information in the body to make a new flight
    * object and add it to the model
    */
-  app.post('/flight/create', function (request, response) {
+app.post('/flight/create', function (request, response) {
     //find and return the relevant flight
     Flight.findOne({launch_name : request.body.launch_name}, function(err, flight) {
-      if (err) {
-          console.error('/flight/:id error:', err);
-          response.status(400).json(err);
-          return;
-      }
-      if(flight){
-        response.status(400).json("This flight name already exists");
-        return;
-      }
+	if (err) {
+            console.error('/flight/:id error:', err);
+            response.status(400).json(err);
+            return;
+	}
+	if(flight){
+            response.status(400).json("This flight name already exists");
+            return;
+	}
 
-      var flight_status = "non-Kythera";
-      if(request.body.kythera == "true"){
-        flight_status = "idle";
-      }
+	var flight_status = "non-Kythera";
+	if(request.body.kythera == "true"){
+            flight_status = "idle";
+	}
+	
+	var baud = request.body.baudRate;
+	console.log(typeof baud);
+	if (typeof baud != 'number') {
+	    baud = parseInt(baud);
+	    if (isNaN(baud)) {
+		response.status(400).json("Invalid baud rate");
+		return;
+	    }
+	}
 
       Flight.create({ launch_name: request.body.launch_name, // Unique launch name for this flight
                       launch_date: request.body.launch_date,
@@ -537,7 +556,7 @@ socketServer.on('connection', function(socket){
                       units: decodeURIComponent(request.body.units),
                       states: decodeURIComponent(request.body.states),
                       portName: decodeURIComponent(request.body.portName),
-                      baudRate: request.body.baudRate,
+                      baudRate: baud,
                       photos: [] },
         function(err, newFlight){
           if(err){
